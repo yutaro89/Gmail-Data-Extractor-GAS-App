@@ -32,10 +32,10 @@ Web UIを通じて手動で抽出を実行できるほか、Dockerを活用す�
     cd gmail-data-extractor-gas-app
     ```
 
-2.  **Dockerコンテナを起動:**
-    プロジェクトのルートディレクトリで以下のコマンドを実行し、開発用コンテナをバックグラウンドで起動します。
+2.  **Dockerイメージの再構築とコンテナの起動:**
+    プロジェクトのルートディレクトリで以下のコマンドを実行します。`Dockerfile`が更新されたため、`--build`フラグを付けてイメージを再構築し、コンテナを起動します。
     ```bash
-    docker compose up -d
+    docker compose up -d --build
     ```
 
 3.  **`clasp`でGoogleにログイン (重要):**
