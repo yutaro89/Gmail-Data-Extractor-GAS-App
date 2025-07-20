@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Define the development service for clasp
   clasp-dev:
