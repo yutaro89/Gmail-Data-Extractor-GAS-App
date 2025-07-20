@@ -70,7 +70,8 @@ function getEmails(searchQuery, maxResults = 100) {
           subject: message.getSubject(),
           date: message.getDate().toISOString(),
           isUnread: message.isUnread(),
-          snippet: message.getSnippet(),
+          // Corrected: getSnippet() is a method of the thread, not the message.
+          snippet: thread.getSnippet(),
           plainBody: plainBody,
         });
       }
