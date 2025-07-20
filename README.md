@@ -1,3 +1,6 @@
+Vibe Codingにて作成中。
+動作確認取れておりません！！！
+
 # Gmail Data Extractor GAS App
 
 ## 1. 概要 (Overview)
