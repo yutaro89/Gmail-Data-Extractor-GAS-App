@@ -108,11 +108,15 @@ Web UIを通じて手動で抽出を実行できるほか、Dockerを活用す�
 ## 4. デプロイと実行 (Deployment & Usage)
 
 1.  **GASプロジェクトを開く:**
-    コンテナ内で以下のコマンドを実行すると、ブラウザでGASのWebエディタが開きます。
+    `clasp open`コマンドはバージョンによって動作しないことがあるため、より確実な方法としてブラウザで直接プロジェクトを開きます。
+
+    a. **スクリプトIDを確認:** 以下のコマンドで、`.clasp.json`ファイルに保存されているスクリプトIDを確認します。
     ```bash
     # /app # のようなプロンプトで実行
-    clasp open
+    cat .clasp.json
     ```
+    b. **URLを開く:** ホストPCのブラウザで、以下のURLにアクセスします。`YOUR_SCRIPT_ID`の部分を、上記で確認したIDに置き換えてください。
+    `https://script.google.com/d/YOUR_SCRIPT_ID/edit`
 
 2.  **Webアプリとしてデプロイ:**
     - Webエディタ右上の「デプロイ」ボタンをクリックし、「新しいデプロイ」を選択します。
@@ -132,7 +136,7 @@ Web UIを通じて手動で抽出を実行できるほか、Dockerを活用す�
 /
 ├── .github/              # GitHub Actions workflows
 ├── .gitignore            # Files to be ignored by Git
-├── .clasp.json           # clasp configuration
+├── .clasp.json           # clasp configuration (Important: Do not ignore)
 ├── appsscript.json       # GAS manifest file
 ├── src/                  # Source code
 │   ├── Code.gs           # Server-side logic

@@ -1,7 +1,7 @@
 # Node dependencies
 /node_modules
 
-# Local clasp configuration file
+# Local clasp configuration file (for overriding credentials locally)
 .clasp.local.json
 
 # Build artifacts
