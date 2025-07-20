@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --primary-color: #4285F4;
+      --primary-dark-color: #3367D6;
+      --background-color: #f8f9fa;
+      --font-color: #3c4043;
+      --border-color: #dadce0;
+      --success-bg: #e6f4ea;
+      --success-color: #1e8e3e;
+      --error-bg: #fce8e6;
+      --error-color: #d93025;
+      --card-bg: #ffffff;
+      --shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--background-color);
+      color: var(--font-color);
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: var(--primary-color);
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #5f6368;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .form-container {
+      background-color: var(--card-bg);
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .controls .form-group {
+      flex-grow: 1;
+    }
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background-color 0.2s;
+      white-space: nowrap;
+    }
+    button:hover {
+      background-color: var(--primary-dark-color);
+    }
+    button:disabled {
+      background-color: #9e9e9e;
+      cursor: not-allowed;
+    }
+    #status {
+      padding: 12px;
+      border-radius: 4px;
+      margin-top: 20px;
+      font-weight: 500;
+      display: none; /* Hidden by default */
+    }
+    .status-success {
+      background-color: var(--success-bg);
+      color: var(--success-color);
+      border: 1px solid var(--success-color);
+    }
+    .status-error {
+      background-color: var(--error-bg);
+      color: var(--error-color);
+      border: 1px solid var(--error-color);
+    }
+    .result-item {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: var(--shadow);
+    }
+    .result-item h3 {
+      font-size: 16px;
+      margin: 0 0 5px 0;
+    }
+    .result-item p {
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      color: #5f6368;
+    }
+    .result-item .meta {
+      font-size: 12px;
+      color: #80868b;
+    }
+    .result-item pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      background-color: #f1f3f4;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Gmailメール抽出アプリ</h1>
+    <p>
+      Gmailの検索クエリを入力してメールを抽出します。<br>
+      例: <code>is:unread -has:userlabels</code>, <code>from:("example.com") subject:会議 after:2024/01/01</code>
+    </p>
+
+    <div class="form-container">
+      <div class="form-group">
+        <label for="searchQuery">検索クエリ</label>
+        <input type="text" id="searchQuery" value="is:unread -has:userlabels">
+      </div>
+      <div class="controls">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="maxResults">最大件数</label>
+          <input type="number" id="maxResults" value="50" min="1" max="500">
+        </div>
+        <button id="extractButton" onclick="extractAndDisplayEmails()">メールを抽出</button>
+      </div>
+    </div>
+
+    <div id="status"></div>
+    <div id="results"></div>
+  </div>
+
+  <script>
+    const extractButton = document.getElementById('extractButton');
+    const statusDiv = document.getElementById('status');
+    const resultsDiv = document.getElementById('results');
+
+    function showStatus(message, isError = false) {
+      statusDiv.textContent = message;
+      statusDiv.className = isError ? 'status-error' : 'status-success';
+      statusDiv.style.display = 'block';
+    }
+
+    function extractAndDisplayEmails() {
+      // Disable button and show loading status
+      extractButton.disabled = true;
+      extractButton.textContent = '抽出中...';
+      resultsDiv.innerHTML = '';
+      showStatus('メールを抽出しています...', false);
+
+      const searchQuery = document.getElementById('searchQuery').value;
+      const maxResults = document.getElementById('maxResults').value;
+
+      google.script.run
+        .withSuccessHandler(onSuccess)
+        .withFailureHandler(onFailure)
+        .getEmails(searchQuery, maxResults);
+    }
+
+    function onSuccess(emails) {
+      // Re-enable button
+      extractButton.disabled = false;
+      extractButton.textContent = 'メールを抽出';
+
+      if (emails && emails.length > 0) {
+        showStatus(`抽出完了。${emails.length}件のメールが見つかりました。`, false);
+        let html = '';
+        emails.forEach(email => {
+          html += `
+            <div class="result-item">
+              <h3>${escapeHtml(email.subject)}</h3>
+              <p class="meta">
+                <strong>From:</strong> ${escapeHtml(email.from)}<br>
+                <strong>Date:</strong> ${new Date(email.date).toLocaleString()}
+              </p>
+              <p><strong>Snippet:</strong> ${escapeHtml(email.snippet)}</p>
+              <div><strong>Plain Body:</strong></div>
+              <pre>${escapeHtml(email.plainBody)}</pre>
+            </div>
+          `;
+        });
+        resultsDiv.innerHTML = html;
+      } else {
+        showStatus('該当するメールは見つかりませんでした。', false);
+      }
+    }
+
+    function onFailure(error) {
+      // Re-enable button
+      extractButton.disabled = false;
+      extractButton.textContent = 'メールを抽出';
+      
+      const errorMessage = `エラーが発生しました: ${error.message}`;
+      showStatus(errorMessage, true);
+      console.error(errorMessage);
+    }
+
+    function escapeHtml(unsafe) {
+      if (typeof unsafe !== 'string') return '';
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>

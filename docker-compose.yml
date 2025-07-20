@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  # Define the development service for clasp
+  clasp-dev:
+    # Build the Docker image from the Dockerfile in the current directory
+    build: .
+    # Name the container for easier identification
+    container_name: clasp_dev_container
+    # Mount the entire project directory from the host to /app in the container.
+    # This allows live code changes on the host to be reflected inside the container.
+    volumes:
+      - .:/app
+    # Keep standard input open, which is necessary for an interactive shell
+    stdin_open: true
+    # Allocate a pseudo-TTY, which allows for an interactive terminal session
+    tty: true
