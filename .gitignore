@@ -20,3 +20,5 @@ Thumbs.db
 
 # .gitignore に追加
 /playwright/.auth/
+/test-results
+/playwright-report
