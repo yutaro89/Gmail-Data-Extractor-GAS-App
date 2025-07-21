@@ -113,6 +113,7 @@ Web UIを通じて手動で抽出を実行できるほか、Dockerを活用す�
 
 ## 6. プロジェクト構成 (Project Structure)
 
+```
 /
 ├── .github/              # GitHub Actions ワークフロー
 │   └── workflows/
@@ -143,6 +144,7 @@ Web UIを通じて手動で抽出を実行できるほか、Dockerを活用す�
 │       └── auth.setup.js
 └── unit/
 └── Code.test.js
+```
 
 ## 7. コードスタイルのチェック (Code Style)
 
@@ -276,6 +278,7 @@ For manual regression testing, please refer to the document below.
 
 ## 6. Project Structure
 
+```
 /
 ├── .github/              # GitHub Actions workflows
 │   └── workflows/
@@ -306,6 +309,7 @@ For manual regression testing, please refer to the document below.
 │       └── auth.setup.js
 └── unit/
 └── Code.test.js
+```
 
 ## 7. Code Style
 
