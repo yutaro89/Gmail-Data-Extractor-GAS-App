@@ -63,6 +63,9 @@ function getEmails(searchQuery, maxResults = 100) {
           Logger.log(`Could not get plain body for message ID ${message.getId()}: ${bodyError.toString()}`);
         }
 
+        // Create a snippet from the beginning of the plain body to avoid errors.
+        const snippet = plainBody.substring(0, 250);
+
         emails.push({
           id: message.getId(),
           threadId: thread.getId(),
@@ -70,8 +73,7 @@ function getEmails(searchQuery, maxResults = 100) {
           subject: message.getSubject(),
           date: message.getDate().toISOString(),
           isUnread: message.isUnread(),
-          // Corrected: getSnippet() is a method of the thread, not the message.
-          snippet: thread.getSnippet(),
+          snippet: snippet,
           plainBody: plainBody,
         });
       }
