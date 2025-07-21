@@ -1,0 +1,17 @@
+services:
+  e2e-tester:
+    # buildコンテキストはプロジェクトルート(`..`)を指定し、
+    # 作成した専用のDockerfileを読み込む
+    build:
+      context: ..
+      dockerfile: tests/Dockerfile.e2e
+    container_name: e2e_test_container
+    # プロジェクト全体をマウントして、ファイルの変更を即時反映
+    volumes:
+      - ..:/app
+    # シェルを対話的に使えるようにする
+    stdin_open: true
+    tty: true
+    # 環境変数を渡す必要がある場合
+    # environment:
+    #   - E2E_TARGET_URL=${E2E_TARGET_URL}

@@ -37,17 +37,16 @@ Web UIを通じて手動で抽出を実行できるほか、Dockerを活用す�
     cd Gmail-Data-Extractor-GAS-App
     ```
 
-2.  **Dockerイメージの再構築とコンテナの起動:**
-    プロジェクトのルートディレクトリで以下のコマンドを実行します。`Dockerfile`が更新されたため、`--build`フラグを付けてイメージを再構築し、コンテナを起動します。
+2.  **Dockerイメージの構築とコンテナの起動:**
     ```bash
     docker compose up -d --build
     ```
 
 3.  **`clasp`でGoogleにログイン (重要):**
-    Dockerコンテナ内からのログインは少し特殊な手順が必要です。**ターミナルを2つ使って作業します。**
+    Dockerコンテナ内からのログインは、2つのターミナルを使った特殊な手順が必要です。
 
     **【ターミナル ①】 - `clasp login` を実行する**
-    a. 以下のコマンドでコンテナのシェルに接続します。
+    a. コンテナのシェルに接続します。
     ```bash
     docker compose exec clasp-dev /bin/sh
     ```
@@ -56,119 +55,88 @@ Web UIを通じて手動で抽出を実行できるほか、Dockerを活用す�
     # /app # のようなプロンプトで実行
     clasp login
     ```
-    c. `Authorize clasp by visiting this URL:` の後に表示される `https://accounts.google.com/...` から始まる長いURLをコピーします。
-    d. ホストPCのブラウザでそのURLを開き、Googleアカウントでログインして、権限を許可（続行）します。
-    e. 許可すると、ブラウザは `http://localhost:xxxx` のようなアドレスにリダイレクトしようとして「このサイトにアクセスできません」といったエラー画面になります。**それで正常です。**
-    f. そのエラー画面に表示されているURL（`http://localhost:xxxx/?code=4/0A...` のような形式）をすべてコピーします。
-    g. **このターミナル①は、このまま待機させておきます。**
+    c. `Authorize clasp...` の後に表示されるURLをコピーします。
+    d. ホストPCのブラウザでURLを開き、Googleアカウントでログインして権限を許可します。
+    e. リダイレクト後に表示されるエラーページのURL（`http://localhost:xxxx/?code=...`）をすべてコピーします。
 
     **【ターミナル ②】 - 認証コードをコンテナに渡す**
     a. PCで**新しいターミナル**を開きます。
-    b. 以下のコマンドを実行します。`'コピーしたURL'` の部分を、先ほど手順(f)でコピーしたURLに置き換えてください。**URLは必ずシングルクォート(')で囲ってください。**
+    b. 以下のコマンドを実行します。`'コピーしたURL'` の部分を、先ほどコピーしたURLに置き換えてください。
     ```bash
     docker compose exec clasp-dev curl 'コピーしたURL'
     ```
-    c. このコマンドを実行すると、ターミナル①の方で `Logged in successfully.` と表示され、ログインが完了します。
+    c. ターミナル①で `Logged in successfully.` と表示されればログイン完了です。
 
-4.  **GASプロジェクトの作成と紐付け (推奨手順):**
-    `clasp create`コマンドが不安定な場合があるため、手動でプロジェクトを作成し、`clasp clone`で紐付ける方法を推奨します。
-
-    a. **ブラウザでGASプロジェクトを作成:**
-       - [script.google.com](https://script.google.com/home/my) にアクセスします。
-       - 「新しいプロジェクト」をクリックします。
-       - 左上の「無題のプロジェクト」をクリックし、`Gmail Data Extractor` のような分かりやすい名前に変更します。
-
-    b. **スクリプトIDをコピー:**
-       - 左側のメニューから「プロジェクトの設定」（歯車アイコン）をクリックします。
-       - 「ID」の項目にある「スクリプトID」をコピーします。
-
-    c. **`clasp clone` を実行:**
-       - ログインが完了している**ターミナル①**に戻ります。
-       - 以下のコマンドを実行します。`YOUR_SCRIPT_ID`の部分を、先ほどコピーしたスクリプトIDに置き換えてください。
+4.  **GASプロジェクトの作成と紐付け:**
+    ブラウザで[GASプロジェクトを新規作成](https://script.google.com/home/my)し、「プロジェクトの設定」から**スクリプトID**をコピーします。
+    **ターミナル①**に戻り、以下のコマンドでローカル環境と紐付けます。
     ```bash
-    # /app # のようなプロンプトで実行
     clasp clone "YOUR_SCRIPT_ID" --rootDir ./src
     ```
-    このコマンドにより、`.clasp.json`ファイルが正しく生成されます。
 
-5.  **Apps Script APIの有効化 (初回のみ):**
-    `clasp push`を初めて実行する前に、お使いのGoogleアカウントで **Apps Script API** を有効にする必要があります。
-    
-    a. **[こちら](https://script.google.com/home/usersettings)のリンクから設定ページにアクセスします。**
-    
-    b. 「Google Apps Script API」の項目を見つけ、スイッチを「オン」に切り替えます。
-    
-    c. 設定の変更がシステム全体に反映されるまで数分かかることがあります。
-
-6.  **ソースコードをGASプロジェクトにプッシュ:**
-    APIを有効にした後、ターミナル①で以下のコマンドを実行します。
+5.  **依存パッケージのインストール:**
+    **ターミナル①**で、テスト実行に必要なパッケージをインストールします。
     ```bash
-    # /app # のようなプロンプトで実行
-    clasp push
-    ```appsscript.json`の`oauthScopes`について警告が表示された場合は、`y`を入力して続行してください。
+    npm install
+    ```
 
-7.  **完了！**
-    これで開発の準備が整いました。コードを編集した後は、再度`clasp push`を実行して変更を反映させてください。
+6.  **Apps Script APIの有効化 (初回のみ):**
+    [設定ページ](https://script.google.com/home/usersettings)にアクセスし、「Google Apps Script API」を「オン」に切り替えます。
+
+7.  **ソースコードをGASプロジェクトにプッシュ:**
+    **ターミナル①**で以下のコマンドを実行します。
+    ```bash
+    clasp push
+    ```
 
 ## 4. デプロイと実行 (Deployment & Usage)
 
-1.  **GASプロジェクトを開く:**
-    `clasp open`コマンドはバージョンによって動作しないことがあるため、より確実な方法としてブラウザで直接プロジェクトを開きます。
+1.  **Webアプリとしてデプロイ:**
+    [GASエディタ](https://script.google.com/home/my)でプロジェクトを開き、右上の「デプロイ」>「新しいデプロイ」を選択します。
+    - **種類を選択:** 歯車アイコンをクリックし、「ウェブアプリ」を選択します。
+    - **次のユーザーとして実行:** `自分`
+    - **アクセスできるユーザー:** `自分のみ`
+    - 「デプロイ」をクリックし、表示された**ウェブアプリURL**をコピーします。
 
-    a. **スクリプトIDを確認:** 以下のコマンドで、`.clasp.json`ファイルに保存されているスクリプトIDを確認します。
-    ```bash
-    # /app # のようなプロンプトで実行
-    cat .clasp.json
-    ```
-    b. **URLを開く:** ホストPCのブラウザで、以下のURLにアクセスします。`YOUR_SCRIPT_ID`の部分を、上記で確認したIDに置き換えてください。
-    `https://script.google.com/d/YOUR_SCRIPT_ID/edit`
-
-2.  **Webアプリとしてデプロイ:**
-    - Webエディタ右上の「デプロイ」ボタンをクリックし、「新しいデプロイ」を選択します。
-    - 歯車アイコンをクリックし、「ウェブアプリ」を選択します。
-    - **説明:** (任意) `Initial deployment`など
-    - **次のユーザーとして実行:** `自分` (USER_DEPLOYING)
-    - **アクセスできるユーザー:** `自分のみ` (MYSELF)
-    - 「デプロイ」ボタンをクリックします。
-
-3.  **Webアプリへのアクセスと権限の許可 (初回のみ):**
-    デプロイが完了すると、ウェブアプリのURLが表示されます。このURLに初めてアクセスすると、「Google hasn't verified this app (このアプリは Google で確認されていません)」という警告画面が表示されますが、これは正常な動作です。
-
-    a. **警告画面を回避:**
-       - **「詳細」** (Advanced) をクリックします。
-       - **「(アプリ名)に移動（安全ではないページ）」** (Go to [App Name] (unsafe)) をクリックします。
-
-    b. **権限を許可:**
-       - 次の画面で、このアプリが要求する権限の一覧が表示されます。
-       - 内容を確認し、**「許可」** (Allow) をクリックします。
-
-    これでアプリケーションが表示され、利用できるようになります。
+2.  **Webアプリへのアクセスと権限の許可:**
+    コピーしたURLに初めてアクセスすると警告画面が表示されますが、「詳細」 > 「(アプリ名)に移動（安全ではないページ）」と進み、権限を「許可」してください。
 
 ## 5. テスト (Testing)
 
-アプリケーションが正しく動作することを確認するための手動テストケースをまとめています。機能の追加や修正を行った際は、以下のドキュメントを参照してリグレッションテストを実施してください。
+このプロジェクトには、JestによるユニットテストとPlaywrightによるE2Eテストが用意されています。
 
-- **[TESTING.md](./TESTING.md)**
+詳細なテストの実行方法については、`tests`ディレクトリ内の以下のガイドを参照してください。
+
+-   **[テスト実施ガイド](./tests/TESTING_GUIDE.md)**
+
+また、手動でのリグレッションテストについては、以下のドキュメントを参照してください。
+
+-   **[手動テストケース](./TESTING.md)**
+
 
 ## 6. プロジェクト構成 (Project Structure)
 
-```
 /
-├── .github/              # GitHub Actions workflows
-├── .gitignore            # Files to be ignored by Git
-├── .clasp.json           # clasp configuration (Important: Do not ignore)
-├── appsscript.json       # GAS manifest file
-├── src/                  # Source code
-│   ├── Code.gs           # Server-side logic
-│   └── Index.html        # Web UI (HTML, CSS, JS)
-├── README.md             # This file
-├── TESTING.md            # Manual testing guide
-├── LICENSE               # Project license
-├── CONTRIBUTING.md       # Contribution guidelines
-├── CODE_OF_CONDUCT.md    # Code of conduct
-├── Dockerfile            # Docker image definition
-└── docker-compose.yml    # Docker Compose configuration
-```
+├── .clasp.json           # clasp設定ファイル
+├── .gitignore            # Gitの無視ファイル設定
+├── appsscript.json       # GASマニフェストファイル
+├── Dockerfile            # 開発用のDockerfile
+├── docker-compose.yml    # 開発用のdocker-compose
+├── LICENSE               # プロジェクトライセンス
+├── CONTRIBUTING.md       # コントリビュートガイド
+├── package.json          # Node.jsプロジェクト定義
+├── README.md             # このファイル
+├── TESTING.md            # 手動テストケース
+├── src/                  # ソースコードディレクトリ
+│   ├── Code.gs           # サーバーサイドロジック(Apps Script)
+│   └── Index.html        # Web UI (HTML/CSS/JS)
+└── tests/                # テスト関連ディレクトリ
+├── unit/             # ユニットテストコード
+├── e2e/              # E2Eテストコード
+├── TESTING_GUIDE.md  # テスト実施の詳細ガイド
+├── Dockerfile.e2e    # E2Eテスト専用のDockerfile
+└── ...               # 他テスト関連ファイル
+
 
 ## 7. ライセンス (License)
 
@@ -183,9 +151,7 @@ Web UIを通じて手動で抽出を実行できるほか、Dockerを活用す�
 
 ## 1. Overview
 
-This project is a versatile web application built with Google Apps Script (GAS) that extracts email data from a user's Gmail account based on a specified search query.
-
-It allows manual extraction through a web UI and utilizes Docker to maintain a clean and reproducible local development environment.
+This project is a versatile web application built with Google Apps Script (GAS) that extracts email data from a user's Gmail account based on a specified search query. It allows manual extraction through a web UI and utilizes Docker to maintain a clean and reproducible local development environment.
 
 ![App Screenshot](./.assets/screenshot.png)
 
@@ -216,7 +182,6 @@ This project uses Docker to build the development environment. You do not need t
     ```
 
 2.  **Build the Docker image and start the container:**
-    In the project root directory, run the following command. The `--build` flag rebuilds the image, which is necessary if the `Dockerfile` has been updated.
     ```bash
     docker compose up -d --build
     ```
@@ -234,120 +199,88 @@ This project uses Docker to build the development environment. You do not need t
     # Run this at a prompt like /app #
     clasp login
     ```
-    c. Copy the long URL that appears after `Authorize clasp by visiting this URL:`, which starts with `https://accounts.google.com/...`.
-    d. Open this URL in your host machine's browser, log in to your Google account, and grant the necessary permissions.
-    e. After granting permission, your browser will try to redirect to an address like `http://localhost:xxxx` and show an error like "This site can’t be reached." **This is normal.**
-    f. Copy the entire URL from the address bar of that error page (it will look like `http://localhost:xxxx/?code=4/0A...`).
-    g. **Leave Terminal ① open and waiting.**
+    c. Copy the URL that appears after `Authorize clasp...`.
+    d. Open this URL in your host browser, log in to your Google account, and grant permissions.
+    e. Copy the entire URL from the error page you are redirected to (it will look like `http://localhost:xxxx/?code=...`).
 
-    **[Terminal ②] - Pass the authorization code to the container**
+    **[Terminal ②] - Pass the authorization code**
     a. Open a **new terminal** on your computer.
-    b. Run the following command. Replace `'COPIED_URL'` with the URL you copied in step (f). **Make sure to enclose the URL in single quotes (').**
+    b. Run the following command, replacing `'COPIED_URL'` with the URL you just copied.
     ```bash
     docker compose exec clasp-dev curl 'COPIED_URL'
     ```
-    c. After running this command, you should see `Logged in successfully.` in Terminal ①.
+    c. You should see `Logged in successfully.` in Terminal ①.
 
-4.  **Create and link the GAS project (Recommended):**
-    Since `clasp create` can sometimes be unstable, the recommended method is to create the project manually in the browser and then link it using `clasp clone`.
-
-    a. **Create a GAS project in your browser:**
-       - Go to [script.google.com](https://script.google.com/home/my).
-       - Click "New project".
-       - Click on "Untitled project" in the top-left and rename it to something recognizable, like `Gmail Data Extractor`.
-
-    b. **Copy the Script ID:**
-       - In the left sidebar, click on "Project Settings" (the gear icon).
-       - Under "IDs", copy the "Script ID".
-
-    c. **Run `clasp clone`:**
-       - Return to **Terminal ①**, where you are logged in.
-       - Run the following command, replacing `YOUR_SCRIPT_ID` with the ID you just copied.
+4.  **Create and link the GAS project:**
+    [Create a new GAS project](https://script.google.com/home/my) in your browser, and copy the **Script ID** from "Project Settings".
+    Return to **Terminal ①** and run the following command to link it.
     ```bash
-    # Run this at a prompt like /app #
     clasp clone "YOUR_SCRIPT_ID" --rootDir ./src
     ```
-    This command will correctly generate the `.clasp.json` file.
 
-5.  **Enable the Apps Script API (First time only):**
-    Before you can `clasp push` for the first time, you must enable the Apps Script API for your Google Account.
-    
-    a. **Visit the settings page using [this link](https://script.google.com/home/usersettings).**
-    
-    b. Find the "Google Apps Script API" setting and turn the switch "On".
-    
-    c. It may take a few minutes for the setting to take effect.
-
-6.  **Push the source code to the GAS project:**
-    After enabling the API, run the following command in Terminal ①:
+5.  **Install Dependencies:**
+    In **Terminal ①**, install the packages required for testing.
     ```bash
-    # Run this at a prompt like /app #
+    npm install
+    ```
+    
+6.  **Enable the Apps Script API (First time only):**
+    Visit the [settings page](https://script.google.com/home/usersettings) and turn the "Google Apps Script API" switch "On".
+
+7.  **Push the source code to the GAS project:**
+    In **Terminal ①**, run the following command:
+    ```bash
     clasp push
     ```
-    If you see a warning about `oauthScopes` in `appsscript.json`, type `y` to proceed.
-
-7.  **Done!**
-    Your development environment is now ready. After editing your code, run `clasp push` again to sync your changes.
 
 ## 4. Deployment & Usage
 
-1.  **Open the GAS Project:**
-    Since `clasp open` can be unreliable depending on the version, it's more robust to open the project directly in your browser.
+1.  **Deploy as a Web App:**
+    Open your project in the [GAS editor](https://script.google.com/home/my) and click "Deploy" > "New deployment".
+    - **Select type:** Click the gear icon and select "Web app".
+    - **Execute as:** `Me`
+    - **Who has access:** `Only myself`
+    - Click "Deploy" and copy the **Web app URL**.
 
-    a. **Get the Script ID:** Check the script ID stored in your `.clasp.json` file.
-    ```bash
-    # Run this at a prompt like /app #
-    cat .clasp.json
-    ```
-    b. **Open the URL:** In your host machine's browser, navigate to the following URL, replacing `YOUR_SCRIPT_ID` with the ID from the previous step.
-    `https://script.google.com/d/YOUR_SCRIPT_ID/edit`
-
-2.  **Deploy as a Web App:**
-    - In the top-right of the web editor, click the "Deploy" button and select "New deployment".
-    - Click the gear icon and select "Web app".
-    - **Description:** (Optional) e.g., `Initial deployment`
-    - **Execute as:** `Me` (USER_DEPLOYING)
-    - **Who has access:** `Only myself` (MYSELF)
-    - Click "Deploy".
-
-3.  **Access the Web App and Grant Permissions (First time only):**
-    Once deployed, a URL for the web app will be displayed. When you first visit this URL, you will see a warning screen saying "Google hasn't verified this app." This is normal.
-
-    a. **Bypass the warning:**
-       - Click **"Advanced"**.
-       - Click **"Go to [App Name] (unsafe)"**.
-
-    b. **Grant permissions:**
-       - On the next screen, a list of permissions required by the app will be displayed.
-       - Review them and click **"Allow"**.
-
-    The application will now load and be ready to use.
+2.  **Access the Web App and Grant Permissions:**
+    When you first visit the URL, you will see a warning screen. Click "Advanced" -> "Go to [App Name] (unsafe)" and then "Allow" to grant permissions.
 
 ## 5. Testing
 
-Manual test cases to ensure the application works correctly are outlined in this document. Please refer to it to perform regression testing after making changes or adding features.
+This project includes unit tests with Jest and E2E tests with Playwright.
 
-- **[TESTING.md](./TESTING.md)**
+For detailed instructions on how to run the tests, please refer to the following guide in the `tests` directory.
+
+-   **[Testing Guide](./tests/TESTING_GUIDE.md)**
+
+For manual regression testing, please refer to the document below.
+
+-   **[Manual Test Cases](./TESTING.md)**
+
 
 ## 6. Project Structure
 
-```
 /
-├── .github/              # GitHub Actions workflows
-├── .gitignore            # Files to be ignored by Git
-├── .clasp.json           # clasp configuration (Important: Do not ignore)
+├── .clasp.json           # clasp configuration file
+├── .gitignore            # Files for Git to ignore
 ├── appsscript.json       # GAS manifest file
-├── src/                  # Source code
-│   ├── Code.gs           # Server-side logic
-│   └── Index.html        # Web UI (HTML, CSS, JS)
-├── README.md             # This file
-├── TESTING.md            # Manual testing guide
+├── Dockerfile            # Dockerfile for development
+├── docker-compose.yml    # Docker Compose for development
 ├── LICENSE               # Project license
 ├── CONTRIBUTING.md       # Contribution guidelines
-├── CODE_OF_CONDUCT.md    # Code of conduct
-├── Dockerfile            # Docker image definition
-└── docker-compose.yml    # Docker Compose configuration
-```
+├── package.json          # Node.js project definition
+├── README.md             # This file
+├── TESTING.md            # Manual test cases
+├── src/                  # Source code directory
+│   ├── Code.gs           # Server-side logic (Apps Script)
+│   └── Index.html        # Web UI (HTML/CSS/JS)
+└── tests/                # Directory for all tests
+├── unit/             # Unit test code
+├── e2e/              # E2E test code
+├── TESTING_GUIDE.md  # Detailed guide for running tests
+├── Dockerfile.e2e    # Dockerfile for E2E tests
+└── ...               # Other test-related files
+
 
 ## 7. License
 

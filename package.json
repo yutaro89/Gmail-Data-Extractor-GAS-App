@@ -5,6 +5,8 @@
   "description": "A web app to extract data from Gmail.",
   "scripts": {
     "test": "jest"
+    "e2e": "playwright test",
+    "e2e:auth": "playwright test --setup"
   },
   "devDependencies": {
     "jest": "^29.0.0" 

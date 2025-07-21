@@ -1,0 +1,19 @@
+# Playwright公式のDockerイメージをベースにする
+# (mcr.microsoft.com/playwright:v<バージョン>-<OS>)
+# バージョンは `npm info @playwright/test version` で確認できます
+FROM mcr.microsoft.com/playwright:v1.45.0-jammy
+
+# コンテナ内の作業ディレクトリを設定
+WORKDIR /app
+
+# まずpackage.json関連ファイルのみコピーして、依存関係をインストール
+# これにより、コードの変更だけで毎回npm installが走るのを防ぐ
+COPY package*.json ./
+RUN npm install
+
+# プロジェクトの全てのファイルをコピー
+COPY . .
+
+# コンテナが起動したときに実行されるデフォルトコマンド
+# 対話的なシェルを起動しておく
+CMD ["/bin/sh"]
