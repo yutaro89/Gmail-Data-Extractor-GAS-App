@@ -1,7 +1,7 @@
 # Playwright公式のDockerイメージをベースにする
 # (mcr.microsoft.com/playwright:v<バージョン>-<OS>)
 # バージョンは `npm info @playwright/test version` で確認できます
-FROM mcr.microsoft.com/playwright:v1.45.0-jammy
+FROM mcr.microsoft.com/playwright:v1.54.1-jammy
 
 # コンテナ内の作業ディレクトリを設定
 WORKDIR /app

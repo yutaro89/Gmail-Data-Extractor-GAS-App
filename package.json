@@ -4,8 +4,8 @@
   "description": "A web app to extract data from Gmail.",
   "scripts": {
     "test:unit": "jest tests/unit",
-    "e2e": "playwright test",
-    "e2e:auth": "playwright test --setup",
+    "e2e": "playwright test --config=tests/playwright.config.js",
+    "e2e:auth": "playwright test --config=tests/playwright.config.js --project=setup",
     "lint": "eslint . --ext .js,.gs",
     "format": "prettier --write ."
   },

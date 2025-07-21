@@ -13,7 +13,7 @@ test.describe('Gmail Data Extractor E2E Test', () => {
 
   test('should extract emails with a valid query', async ({ page }) => {
     // GAS Webアプリはiframe内に描画されるため、iframeを特定
-    const iframe = page.frameLocator('iframe[title="ウェブアプリ"]');
+    const iframe = page.frameLocator('iframe');
 
     // クエリを入力
     await iframe.locator('#searchQuery').fill('is:starred');
@@ -32,7 +32,7 @@ test.describe('Gmail Data Extractor E2E Test', () => {
   });
 
   test('should show an error for an empty query', async ({ page }) => {
-    const iframe = page.frameLocator('iframe[title="ウェブアプリ"]');
+    const iframe = page.frameLocator('iframe');
     
     // 検索クエリを空にする
     await iframe.locator('#searchQuery').fill('');

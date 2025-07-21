@@ -34,6 +34,21 @@
 -   **テストコード**: `tests/e2e/` ディレクトリ内に配置します。
 -   **実行環境**: E2Eテスト専用のDocker環境を使用します。（開発用コンテナとは別です）
 
+### 事前準備: テスト対象URLの設定
+
+テストを実行する前に、以下の2つのファイルに記載されているWebアプリのURLを、ご自身がデプロイしたアプリのURLに書き換える必要があります。
+
+-   **tests/e2e/app.spec.js**
+-   **tests/e2e/setup/auth.setup.js**
+
+両方のファイルにある以下の行の '...' の部分を、ご自身のURLに書き換えてください。
+
+---
+JavaScript
+
+const WEB_APP_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
+---
+
 ### 実行手順
 
 #### ステップ1: 初回セットアップ（認証情報の保存）
@@ -43,7 +58,7 @@ E2EテストではGoogleへのログインが必要なため、最初に一度�
 1.  以下のコマンドを実行すると、Playwrightのブラウザが起動します。
     ```bash
     # ホストマシンで実行
-    docker compose -f tests/docker-compose.e2e.yml run --rm e2e-tester npm run test:e2e:auth
+    docker compose -f tests/docker-compose.e2e.yml run --rm e2e-tester npm run e2e:auth
     ```
 
 2.  開かれたブラウザで、**手動でGoogleアカウントにログイン**し、アプリの権限を許可してください。
