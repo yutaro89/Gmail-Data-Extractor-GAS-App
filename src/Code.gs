@@ -52,6 +52,7 @@ function getEmails(searchQuery, maxResults = 100) {
 
     // --- Data Extraction ---
     threads.forEach(thread => {
+      // スレッド内の最初のメッセージのみを対象とします
       const message = thread.getMessages()[0]; // Get the first message of each thread
       if (message) {
         let plainBody = '';

@@ -157,7 +157,7 @@
           <label for="maxResults">最大件数</label>
           <input type="number" id="maxResults" value="50" min="1" max="500">
         </div>
-        <button id="extractButton" onclick="extractAndDisplayEmails()">メールを抽出</button>
+        <button id="extractButton">メールを抽出</button>
       </div>
     </div>
 
@@ -166,9 +166,18 @@
   </div>
 
   <script>
+    // --- DOM要素の取得 ---
     const extractButton = document.getElementById('extractButton');
     const statusDiv = document.getElementById('status');
     const resultsDiv = document.getElementById('results');
+    const searchQueryInput = document.getElementById('searchQuery');
+    const maxResultsInput = document.getElementById('maxResults');
+
+    // --- イベントリスナーの登録 ---
+    // ページが読み込まれたら、ボタンにクリックイベントを登録する
+    document.addEventListener('DOMContentLoaded', () => {
+      extractButton.addEventListener('click', extractAndDisplayEmails);
+    });
 
     function showStatus(message, isError = false) {
       statusDiv.textContent = message;
@@ -179,12 +188,12 @@
     function extractAndDisplayEmails() {
       // Disable button and show loading status
       extractButton.disabled = true;
-      extractButton.textContent = '抽出中...';
+      extractButton.textContent = 'Extracting...';
       resultsDiv.innerHTML = '';
-      showStatus('メールを抽出しています...', false);
+      showStatus('Extracting emails...', false);
 
-      const searchQuery = document.getElementById('searchQuery').value;
-      const maxResults = document.getElementById('maxResults').value;
+      const searchQuery = searchQueryInput.value;
+      const maxResults = maxResultsInput.value;
 
       google.script.run
         .withSuccessHandler(onSuccess)
@@ -198,7 +207,7 @@
       extractButton.textContent = 'メールを抽出';
 
       if (emails && emails.length > 0) {
-        showStatus(`抽出完了。${emails.length}件のメールが見つかりました。`, false);
+        showStatus(`Extraction complete. Found ${emails.length} emails.`, false);
         let html = '';
         emails.forEach(email => {
           html += `
@@ -216,7 +225,7 @@
         });
         resultsDiv.innerHTML = html;
       } else {
-        showStatus('該当するメールは見つかりませんでした。', false);
+        showStatus('No matching emails were found.', false);
       }
     }
 
@@ -225,7 +234,7 @@
       extractButton.disabled = false;
       extractButton.textContent = 'メールを抽出';
       
-      const errorMessage = `エラーが発生しました: ${error.message}`;
+      const errorMessage = `An error occurred: ${error.message}`;
       showStatus(errorMessage, true);
       console.error(errorMessage);
     }

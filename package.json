@@ -1,0 +1,12 @@
+// package.json
+{
+  "name": "gmail-data-extractor-gas-app",
+  "version": "1.0.0",
+  "description": "A web app to extract data from Gmail.",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0" 
+  }
+}
