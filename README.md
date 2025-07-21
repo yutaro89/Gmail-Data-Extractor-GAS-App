@@ -164,6 +164,11 @@ npm run format
 
 MIT License のもとで公開されています 。
 
+</details>
+
+<details>
+<summary>English</summary>
+
 English
 Gmail Data Extractor GAS App
 1. Overview
@@ -374,6 +379,6 @@ npm run format
 It is recommended to keep the code clean with these commands before committing or creating a pull request.
 
 8. License
-This project is licensed under the 
+This project is licensed under the MIT License.
 
-MIT License.
+</details>
