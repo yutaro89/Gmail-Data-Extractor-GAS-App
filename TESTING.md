@@ -141,6 +141,6 @@ A maximum of 500 emails are returned.
 
 Clear the "検索クエリ" field and click the button.
 
-An error message "エラーが発生しました: Error: Search query must be a non-empty string." is displayed.
+`An error occurred: Search query must be a non-empty string.` というエラーメッセージが表示される。
 
 After making any code changes, it is recommended to run through these test cases to check for any regressions.
