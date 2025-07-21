@@ -6,7 +6,9 @@
 
 Web UIを通じて手動で抽出を実行できるほか、Dockerを活用することで、ローカル開発環境をクリーンに保ち、再現性を高めています。
 
-![アプリのスクリーンショット](https://placehold.co/800x450/f0f0f0/333333?text=App%20Screenshot)
+![アプリのスクリーンショット](./.assets/screenshot.png)
+
+> **Note:** 上記のスクリーンショットを表示するには、このリポジトリに`.assets/screenshot.png`という名前で画像を配置してください。
 
 ## 2. 主な機能 (Features)
 
@@ -28,8 +30,8 @@ Web UIを通じて手動で抽出を実行できるほか、Dockerを活用す�
 
 1.  **リポジトリをクローン:**
     ```bash
-    git clone [https://github.com/](https://github.com/)<YOUR_USERNAME>/gmail-data-extractor-gas-app.git
-    cd gmail-data-extractor-gas-app
+    git clone [https://github.com/yutaro89/Gmail-Data-Extractor-GAS-App.git](https://github.com/yutaro89/Gmail-Data-Extractor-GAS-App.git)
+    cd Gmail-Data-Extractor-GAS-App
     ```
 
 2.  **Dockerイメージの再構築とコンテナの起動:**
@@ -139,7 +141,13 @@ Web UIを通じて手動で抽出を実行できるほか、Dockerを活用す�
 
     これでアプリケーションが表示され、利用できるようになります。
 
-## 5. プロジェクト構成 (Project Structure)
+## 5. テスト (Testing)
+
+アプリケーションが正しく動作することを確認するための手動テストケースをまとめています。機能の追加や修正を行った際は、以下のドキュメントを参照してリグレッションテストを実施してください。
+
+- **[TESTING.md](./TESTING.md)**
+
+## 6. プロジェクト構成 (Project Structure)
 
 ```
 /
@@ -151,6 +159,7 @@ Web UIを通じて手動で抽出を実行できるほか、Dockerを活用す�
 │   ├── Code.gs           # Server-side logic
 │   └── Index.html        # Web UI (HTML, CSS, JS)
 ├── README.md             # This file
+├── TESTING.md            # Manual testing guide
 ├── LICENSE               # Project license
 ├── CONTRIBUTING.md       # Contribution guidelines
 ├── CODE_OF_CONDUCT.md    # Code of conduct
@@ -158,6 +167,6 @@ Web UIを通じて手動で抽出を実行できるほか、Dockerを活用す�
 └── docker-compose.yml    # Docker Compose configuration
 ```
 
-## 6. ライセンス (License)
+## 7. ライセンス (License)
 
 このプロジェクトは [MIT License](LICENSE) のもとで公開されています。
