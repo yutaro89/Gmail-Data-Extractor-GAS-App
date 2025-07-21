@@ -1,4 +1,4 @@
-<details>
+<details open>
 <summary>日本語 (Japanese)</summary>
 
 # Gmail Data Extractor GAS App

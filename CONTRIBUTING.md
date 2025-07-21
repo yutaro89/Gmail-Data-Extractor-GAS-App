@@ -1,4 +1,4 @@
-<details>
+<details open>
 <summary>日本語 (Japanese)</summary>
 
 # Gmail Data Extractor GAS App への貢献
@@ -45,7 +45,7 @@ Pull Requestを作成する前に、以下のコマンドを実行してエラ�
 
 </details>
 
-<details open>
+<details>
 <summary>English</summary>
 
 # Contributing to Gmail Data Extractor GAS App
