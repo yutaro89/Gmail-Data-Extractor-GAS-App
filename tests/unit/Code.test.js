@@ -1,5 +1,9 @@
-// getEmails関数をインポート
-// `jest.mock`が`require`より先に評価されるように、モジュールのモックを先に記述
+// ファイルパス: tests/unit/Code.test.js
+
+const fs = require('fs');
+const path = require('path');
+
+// グローバルに関数とモックを定義
 global.GmailApp = {
   search: jest.fn(),
 };
@@ -7,32 +11,24 @@ global.Logger = {
   log: jest.fn(),
 };
 
-// `Code.gs`内の`GmailApp`と`Logger`が上記モックを使うように設定
-jest.mock('../../src/Code.gs', () => {
-  const originalModule = jest.requireActual('../../src/Code.gs');
-  return {
-    __esModule: true,
-    ...originalModule,
-  };
-});
+// Code.gsのコードを文字列として読み込む
+const code = fs.readFileSync(path.resolve(__dirname, '../../src/Code.gs'), 'utf8');
+// 読み込んだコードを実行して、グローバル空間に関数を定義する
+eval(code);
 
-const { getEmails } = require('../../src/Code.gs');
 
 // テストケースを記述
 describe('getEmails', () => {
-
   // 各テストの前にモックをリセット
   beforeEach(() => {
-    // `search`メソッドのモックをクリアし、デフォルトで空配列を返すように再設定
     GmailApp.search.mockClear().mockReturnValue([]);
     Logger.log.mockClear();
   });
 
   it('検索クエリが空文字列の場合、エラーをスローする', () => {
-    // 期待する挙動：関数を呼び出すとエラーが発生すること
     expect(() => getEmails('')).toThrow('Search query must be a non-empty string.');
   });
-  
+
   it('検索クエリがnullの場合、エラーをスローする', () => {
     expect(() => getEmails(null)).toThrow('Search query must be a non-empty string.');
   });
@@ -41,16 +37,15 @@ describe('getEmails', () => {
     const query = 'is:unread';
     const max = 50;
     getEmails(query, max);
-    // 期待する挙動：GmailApp.searchが正しい引数で1回呼ばれたこと
     expect(GmailApp.search).toHaveBeenCalledWith(query, 0, max);
   });
-  
+
   it('maxResultsが指定されない場合、デフォルト値(100)で呼び出す', () => {
     const query = 'is:important';
     getEmails(query);
     expect(GmailApp.search).toHaveBeenCalledWith(query, 0, 100);
   });
-  
+
   it('maxResultsが500を超える場合、500で呼び出す', () => {
     const query = 'is:starred';
     getEmails(query, 999);

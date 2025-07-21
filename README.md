@@ -131,6 +131,7 @@ Web UIを通じて手動で抽出を実行できるほか、Dockerを活用す�
 ├── LICENSE               # プロジェクトライセンス
 ├── CONTRIBUTING.md       # コントリビュートガイド
 ├── package.json          # Node.jsプロジェクト定義
+├── package-lock.json 
 ├── README.md             # このファイル
 ├── TESTING.md            # 手動テストケース
 ├── src/                  # ソースコードディレクトリ
@@ -301,6 +302,7 @@ For manual regression testing, please refer to the document below.
 ├── LICENSE               # Project license
 ├── CONTRIBUTING.md       # Contribution guidelines
 ├── package.json          # Node.js project definition
+├── package-lock.json
 ├── README.md             # This file
 ├── TESTING.md            # Manual test cases
 ├── src/                  # Source code directory

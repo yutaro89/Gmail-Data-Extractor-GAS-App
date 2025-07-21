@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A web app to extract data from Gmail.",
   "scripts": {
-    "test:unit": "jest",
+    "test:unit": "jest tests/unit",
     "e2e": "playwright test",
     "e2e:auth": "playwright test --setup",
     "lint": "eslint . --ext .js,.gs",
