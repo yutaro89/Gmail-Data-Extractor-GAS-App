@@ -1,12 +1,13 @@
 import { test, expect } from '@playwright/test';
 
-// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
-// ★ 必ず、ご自身のWebアプリのデプロイURLに書き換えてください ★
-// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
-const WEB_APP_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
+// 環境変数からURLを読み込む
+const WEB_APP_URL = process.env.WEB_APP_URL;
 
 test.describe('Gmail Data Extractor E2E Test', () => {
   test.beforeEach(async ({ page }) => {
+    if (!WEB_APP_URL) {
+      throw new Error("WEB_APP_URL is not set in environment variables.");
+    }
     // 各テストの前にWebアプリのURLにアクセス
     await page.goto(WEB_APP_URL);
   });

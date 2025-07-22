@@ -1,33 +1,36 @@
-import { test as setup, expect } from '@playwright/test';
-
-// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
-// ★ 必ず、ご自身のWebアプリのデプロイURLに書き換えてください ★
-// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
-const WEB_APP_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
+import { test as setup } from '@playwright/test';
 
 const authFile = 'tests/playwright/.auth/user.json';
 
 setup('authenticate', async ({ page }) => {
-  // WebアプリのURLにアクセス
-  await page.goto(WEB_APP_URL);
-  
-  // ログインが必要かどうかを判断（例: "Sign in"ボタンの存在を確認）
-  // Googleのログインページは複雑なので、特定の要素で判断するのは難しい場合があります。
-  // ここでは、URLがaccounts.google.comを含むかで判断します。
-  const isLoginPage = page.url().includes('accounts.google.com');
+  // 環境変数から各種設定を取得
+  const email = process.env.GOOGLE_EMAIL;
+  const password = process.env.GOOGLE_PASSWORD;
+  const WEB_APP_URL = process.env.WEB_APP_URL;
 
-  if (isLoginPage) {
-    console.log('Google login page detected. Please log in manually...');
-    // 手動でのログインと承認を待ちます。
-    // ログインが成功し、アプリのページにリダイレクトされることを期待します。
-    await expect(page).not.toHaveURL(/accounts\.google\.com/, { timeout: 180000 }); // 最大3分待機
+  if (!email || !password || !WEB_APP_URL) {
+    throw new Error('Required environment variables not set in .env file.');
   }
-
-  console.log('Login seems complete or was not required.');
-  console.log('Saving authentication state...');
-
-  // 現在のページの認証情報（Cookieなど）をファイルに保存
-  await page.context().storageState({ path: authFile });
   
+  // 1. Webアプリにアクセス
+  await page.goto(WEB_APP_URL);
+
+  // 2. メールアドレスを入力
+  await page.locator('input[type="email"]').fill(email);
+  await page.getByRole('button', { name: 'Next' }).click();
+  
+  // 3. パスワードの入力欄が表示されるのを待つ
+  console.log(await page.content()); // ← この行に変更
+  await page.waitForSelector('input[type="password"]');
+  
+  // 4. パスワードを入力
+  await page.locator('input[type="password"]').fill(password);
+  await page.getByRole('button', { name: 'Next' }).click();
+  
+  // 5. ログインが完了し、元のWebアプリのURLに戻るのを待つ
+  await page.waitForURL(url => !url.includes("accounts.google.com"));
+
+  // 6. 現在のページの認証情報をファイルに保存
+  await page.context().storageState({ path: authFile });
   console.log(`Authentication state saved to ${authFile}`);
 });

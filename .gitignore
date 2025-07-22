@@ -19,6 +19,9 @@ yarn-error.log*
 Thumbs.db
 
 # .gitignore に追加
-/playwright/.auth/
-/test-results
+/playwright/
 /playwright-report
+/test-results
+.env
+playwright
+gmail-data-extractor-gas-app@1.0.0
